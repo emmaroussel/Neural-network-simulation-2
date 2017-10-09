@@ -3,11 +3,13 @@
 #include <sstream>
 
 int main() {
+
   Neuron neuron1;
   Neuron neuron2;
+  Neuron neuron3;
   neuron1.setPostSynNeuron(&neuron2);
+  neuron1.setPostSynNeuron(&neuron3);
 
-  void TEST(double t_spike, Neuron n2);
 
   double inf(100); //in ms
   double sup(400); //in ms
@@ -19,54 +21,51 @@ int main() {
   inf /= H;
   sup /= H;
 
+/*****************************************************************************/
 
   bool spike1(false);
   bool spike2(false);
+  bool spike3(false);
   size_t t_stop(T_STOP/H); //in terms of steps
-
-  //FOR TEST
-  double time(0);
-  bool hasSpiked(false);
-  bool delay_passed(false);
 
   for (size_t t(0); t < t_stop; ++t) {
     //We update the external current
-    if ((t >= inf) and (t < sup)) {
+    if ((t >= inf) and (t <= sup)) {
       neuron1.setIExt(EXT_CURRENT);
     } else {
       neuron1.setIExt(0);
     }
 
-    //we update the neurons for one step of time
     spike1 = neuron1.update(1);
 
+    //Only neuron1 has post synaptic neurons
     if (spike1) {
       cout << "Spike time : " << neuron1.getSpikeTime()*H << "ms" << endl;
 
-      if (neuron1.getPostSynNeuron() != nullptr) {
-          neuron1.getPostSynNeuron()->receive(D, J);
+      size_t nbPostSyn_1(neuron1.getPostSynNeuron().size()); //nb of post-syn neurons of neuron1
+      for (size_t i(0); i < nbPostSyn_1; ++i) {
+        if ((neuron1.getPostSynNeuron())[i] != nullptr) {
+            (neuron1.getPostSynNeuron())[i]->receive(D, J);
+        }
       }
 
-      //FOR TEST
-      time = 0;
-      hasSpiked = true;
     }
 
     spike2 = neuron2.update(1);
-
-
-    //TEST
-    ++time;
-    if ((hasSpiked)&&(time > D)) {
-      TEST(neuron1.getSpikeTime(), neuron2);
-      hasSpiked = false;
-    }
-
+    spike3 = neuron3.update(1);
 
   }
 
-/*****************************************************************************/
 
+
+/*****************************************************************************/
+void print(string name, Neuron neuron1);
+
+print("membrane_potential_values.txt", neuron1);
+print("membrane_potential_values2.txt", neuron2);
+print("membrane_potential_values3.txt", neuron3);
+
+/*
 //Pour neuron1
     ofstream out;
     out.open("membrane_potential_values.txt");
@@ -105,28 +104,45 @@ int main() {
      out2.close();
     }
 
+    //Pour neuron3
+        ofstream out3;
+        out3.open("membrane_potential_values3.txt");
+        out3.clear();
+        if (out3.fail()) {
+            cerr << "Erreur lecture fichier" << endl;
+        } else {
+            vector<double> potential_values3(neuron3.getAllMembranePotentials());
+            ostringstream texte3;
+
+            for (unsigned int i(0); i < potential_values3.size(); ++i) {
+                texte3 << potential_values3[i] << endl;
+            }
+
+         string potentialAsString = texte3.str(); //str() transforms the stream's content into string
+         out3 << potentialAsString << endl;
+         out3.close();
+       }*/
+
 
   return 0;
 }
 
-
-void TEST(double t_spike, Neuron n2) {
-  //t_spike corresponds to a time spike of neuron1
-  //Membrane potentials of n2 before and after neuron1 spiked
-  double v_bef_spike((n2.getAllMembranePotentials())[t_spike - 1]);
-  double v_af_spike((n2.getAllMembranePotentials())[t_spike + D]);
-
-  cout << "Membrane potential before neuron1 spiked : "
-       << v_bef_spike
-       << endl;
-
-  cout << "Membrane potential after neuron1 spiked and delay is passed : "
-       << v_af_spike
-       << endl;
-
-  if (abs((v_af_spike - v_bef_spike)- J) < EPSILON)  {
-    cout << "TEST PASSED" << endl;
+void print(string name, Neuron neuron1) {
+  ofstream out;
+  out.open(name);
+  out.clear();
+  if (out.fail()) {
+      cerr << "Erreur lecture fichier" << endl;
   } else {
-    cout << "TEST FAILED" << endl;
+      vector<double> potential_values(neuron1.getAllMembranePotentials());
+      ostringstream texte;
+
+      for (unsigned int i(0); i < potential_values.size(); ++i) {
+          texte << potential_values[i] << endl;
+      }
+
+   string potentialAsString = texte.str(); //str() transforms the stream's content into string
+   out << potentialAsString << endl;
+   out.close();
   }
 }
