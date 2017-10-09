@@ -7,6 +7,8 @@ int main() {
   Neuron neuron2;
   neuron1.setPostSyn(&neuron2);
 
+  void TEST(double t_spike, Neuron n2);
+
   double inf(100); //in ms
   double sup(400); //in ms
   if ((inf < T_START) or (sup > T_STOP) or (inf > sup)) {
@@ -42,6 +44,11 @@ int main() {
     }
 
     spike2 = neuron2.update(1);
+
+    if (spike1) {
+      //TEST
+      TEST(neuron1.getSpikeTime(), neuron2);
+    }
 
   }
 
@@ -86,4 +93,30 @@ int main() {
 
 
   return 0;
+}
+
+
+/*Test funciton : hint change in V should match with J
+Basically, we want to check if the potential of the post synaptic neuron
+actually increases of J when the pre synaptuic neuron spikes*/
+void TEST(double t_spike, Neuron n2) {
+  //t_spike corresponds to a time spike of neuron1
+
+  //Membrane potentials of n2 before and after neuron1 spiked
+  double v_bef_spike((n2.getAllMembranePotentials())[t_spike - 1]);
+  double v_af_spike((n2.getAllMembranePotentials())[t_spike]);
+
+  cout << "Membrane potential before neuron1 spiked : "
+       << v_bef_spike
+       << endl;
+
+  cout << "Membrane potential after neuron1 spiked : "
+       << v_af_spike
+       << endl;
+
+   if (abs((v_af_spike - v_bef_spike)- J) < EPSILON)  {
+     cout << "TEST PASSED" << endl;
+   } else {
+     cout << "TEST FAILED" << endl;
+   }
 }

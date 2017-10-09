@@ -15,6 +15,8 @@ double const V_REFRAC = 0; //potential during refractory period, in mV
 double const V_RESET = 0; //potential after the refractory period
 //V_RESET must be below V_THRS to prevent spiking continuously
 
-double const J = 10; //in mV
+double const J = 0.2; //in mV
+
+double const EPSILON = 0.1;
 
 #endif
