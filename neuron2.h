@@ -4,6 +4,7 @@
 #include "Constants.hpp"
 #include <iostream>
 #include <vector>
+#include <array>
 #include <cmath>
 using namespace std;
 
@@ -17,20 +18,22 @@ class Neuron {
     long getNbSpikes() const;
     long getSpikeTime() const;
     vector<double> getAllMembranePotentials() const;
-    bool isRefractory() const;
-    Neuron* getPostSyn();
+
+    Neuron* getPostSynNeuron();
 
     //SETTER
     void setMembranePotential(double potential);
     void setIExt(double current);
     void updateAllMembranePotentials(double potential);
     void setRefractory(bool state);
-    void setPostSyn(Neuron* n);
+    void setPostSynNeuron(Neuron* n);
 
     //METHODS
     void updateMembranePotential(double current, double h, double tau, double resistance);
     bool update(long steps);
-    void receive(double j);
+
+    void receive(double delay, double j);
+    void updateRingBuffer();
 
   private :
     double membrane_potential_;
@@ -42,7 +45,11 @@ class Neuron {
     long refractory_steps_;
     vector<double> allMembranePotentials_;
 
-    Neuron* post_syn_;
+    Neuron* post_synaptic_neuron_;
+    array<double, 15> ring_buffer_;
+    /*stores the incoming spikes at ≠ steps
+    We assume the delay here is maximum equal to 15 steps*/
+
 };
 
 
