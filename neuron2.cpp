@@ -42,10 +42,6 @@ vector<double> Neuron::getAllMembranePotentials() const {
   return allMembranePotentials_;
 }
 
-vector<Neuron*> Neuron::getPostSynNeuron() const {
-  return targets;
-}
-
 /**********************************************************************************/
 
 //SETTERS
@@ -61,10 +57,6 @@ void Neuron::updateAllMembranePotentials(double potential) {
     allMembranePotentials_.push_back(potential);
 }
 
-void Neuron::setPostSynNeuron(Neuron* n) {
-  targets.push_back(n);
-}
-
 /**********************************************************************************/
 
 //METHODS
@@ -74,10 +66,11 @@ void Neuron::updateMembranePotential(double current, double h, double tau, doubl
       + current*resistance*(1-exp(-h/tau))
       + ring_buffer_[rb_index_]
     );
+    ring_buffer_[rb_index_] = 0;
 }
 
 bool Neuron::update(long steps) {
- assert(steps >= 0);
+ if (steps == 0) return false;
 
  double t_stop(clock_ + steps);
  bool spike(false);
@@ -118,29 +111,12 @@ bool Neuron::update(long steps) {
 
 
 void Neuron::receive(int delay, double j) {
-assert(delay >= 0);
-//si on considère que le rb_index_ donne le readout de now -> cet index correspond à now
-  size_t position(rb_index_ + delay);
-  if (position > ring_buffer_.size()) {
-    position -= ring_buffer_.size();
-  }
+  assert(delay >= 0);
+  size_t position((rb_index_ + delay) % (D+1));
   ring_buffer_[position] += j;
 }
 
 void Neuron::updateRingBuffer() {
-
-  increaseIndex();
-  /*Each value goes up of one "floor" of the tab (at each step of time, since
-  we call this method in the update of the neuron)
-  The first value of the tab will be used when computing the membrane potential
-  for (size_t i(0); i < ring_buffer_.size() -1; ++i) {
-    ring_buffer_[i] = ring_buffer_[i+1];
-  }
-
-  ring_buffer_[ring_buffer_.size()-1] = 0;*/
-}
-
-void Neuron::increaseIndex() {
   /*if the ring buffer index is at "the end" of the ring buffer,
   then we move the read-out index to the first position*/
   if (rb_index_ == ring_buffer_.size() - 1) {

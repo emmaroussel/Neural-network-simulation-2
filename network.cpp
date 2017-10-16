@@ -1,8 +1,19 @@
 #include "network.h"
 
 //CONSTRUCTOR
-Network::Network() : global_clock_(0)
-{}
+Network::Network(vector<Neuron*> all_neurons) :
+  global_clock_(0), all_neurons_(all_neurons)
+{
+  //When creating the network, the neurons are not connected yet
+  nb_neurons_ = all_neurons_.size();
+  for (size_t i(0); i < nb_neurons_; ++i) {
+    vector<bool> subVector;
+    connexions_.push_back(subVector);
+    for (size_t j(0); j < nb_neurons_; ++j) {
+      connexions_[i].push_back(false);
+    }
+  }
+}
 
 //DESTRUCTOR
 Network::~Network()
@@ -11,14 +22,22 @@ Network::~Network()
 //METHODS
 void Network::addNeuron(Neuron* n) {
   assert(n != nullptr);
-  neurons.push_back(n);
+  all_neurons_.push_back(n);
 }
 
-void Network::addConnexion(Neuron* n1, Neuron* n2) {
-    assert(n1 != nullptr);
-    assert(n2 != nullptr);
-    n1->setPostSynNeuron(n2);
+void Network::addConnexion(unsigned int id_n1, unsigned int id_n2) {
+    assert(id_n1 < nb_neurons_);
+    assert(id_n2 < nb_neurons_);
+    connexions_[id_n1][id_n2] = true;
+    //True meaning that the neuron2 (n2) is a post-synaptic neuron of neuron1 (n1)
 }
+
+void Network::deleteConnexion(unsigned int id_n1, unsigned int id_n2) {
+    assert(id_n1 < nb_neurons_);
+    assert(id_n2 < nb_neurons_);
+    connexions_[id_n1][id_n2] = false;
+}
+
 
 void Network::updateNetwork() {
 
@@ -44,20 +63,20 @@ void Network::updateNetwork() {
       zero = true;
     }
 
-    for (size_t i(0); i < neurons.size(); ++i) {
-      assert(neurons[i] != nullptr);
+    for (size_t i(0); i < all_neurons_.size(); ++i) {
+      assert(all_neurons_[i] != nullptr);
 
-      neurons[i]->setIExt(0); //à enlever là c'est juste pour que l'input current du neuron2 soit = 0
-      if (i == 0) { //à enlever c'est juste pour que input current neuron2=0
+      all_neurons_[i]->setIExt(0); //à enlever là c'est juste pour que l'input current du neuron2 soit = 0
+      if (i == 0) { //à enlever c'est juste pour que input current neuron2=0 et pas neuron1
         //We update the input current for the neuron 1
         if (zero) {
-          neurons[i]->setIExt(0);
+          all_neurons_[i]->setIExt(0);
         } else {
-          neurons[i]->setIExt(EXT_CURRENT);
+          all_neurons_[i]->setIExt(EXT_CURRENT);
         }
       }
 
-      updateOneNeuron(neurons[i]);
+      updateOneNeuron(i);
       }
 
     ++global_clock_;
@@ -67,19 +86,24 @@ void Network::updateNetwork() {
 }
 
 
- void Network::updateOneNeuron(Neuron* n) {
+ void Network::updateOneNeuron(unsigned int id_n) {
    bool spike(false);
-   spike = n->update(1);
+   spike = all_neurons_[id_n]->update(1);
 
    /*If the neuron spikes, then we udpate the membrane potential of its post-syn
    synaptic neurons*/
    if (spike) {
 
-     size_t nbPostSyn((n->getPostSynNeuron()).size()); //nb of post-syn neurons of n
+     vector<size_t> post;
+     //We look for the post-syn neurons and store their index
+     for (size_t i(0); i < nb_neurons_; ++i) {
+       if (connexions_[id_n][i]) post.push_back(i);
+     }
 
-     for (size_t i(0); i < nbPostSyn; ++i) {
-       assert((n->getPostSynNeuron())[i] != nullptr);
-       (n->getPostSynNeuron())[i]->receive(D, J);
+     size_t nb_post(post.size());
+     for (size_t i(0); i < nb_post; ++i) {
+       assert(all_neurons_[post[i]] != nullptr);
+       all_neurons_[post[i]]->receive(D, J);
      }
 
    }

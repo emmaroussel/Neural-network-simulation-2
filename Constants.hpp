@@ -17,7 +17,7 @@ double const V_RESET = 0; //potential after the refractory period
 //V_RESET must be below V_THRS to prevent spiking continuously
 
 double const J = 0.2; //amplitude spike in mV
-int const D = 4; //delay, already in steps
+int const D = 15; //delay, already in steps (15 steps <=> 1.5ms)
 
 double const EPSILON = 0.1;
 

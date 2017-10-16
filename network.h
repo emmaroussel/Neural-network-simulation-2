@@ -11,18 +11,21 @@ using namespace std;
 class Network {
   public :
     //CONSTRUCTOR
-    Network();
+    Network(vector<Neuron*> all_neurons);
     ~Network();
 
     //METHODS
     void addNeuron(Neuron* n);
-    void addConnexion(Neuron* n1, Neuron* n2);
+    void addConnexion(unsigned int id_n1, unsigned int id_n2);
+    void deleteConnexion(unsigned int id_n1, unsigned int id_n2);
     void updateNetwork();
-    void updateOneNeuron(Neuron* n);
+    void updateOneNeuron(unsigned int id_n);
 
   private :
-    vector<Neuron*> neurons;
     long global_clock_;
+    vector<Neuron*> all_neurons_;
+    unsigned int nb_neurons_;
+    vector< vector<bool> > connexions_;
 
 };
 
