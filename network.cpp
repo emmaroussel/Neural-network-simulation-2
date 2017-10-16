@@ -19,6 +19,11 @@ Network::Network(vector<Neuron*> all_neurons) :
 Network::~Network()
 {}
 
+//GETTER
+vector<Neuron*> Network::getAllNeurons() const {
+  return all_neurons_;
+}
+
 //METHODS
 void Network::addNeuron(Neuron* n) {
   assert(n != nullptr);
@@ -41,7 +46,7 @@ void Network::deleteConnexion(unsigned int id_n1, unsigned int id_n2) {
 
 void Network::updateNetwork() {
 
-  size_t t_stop(T_STOP/H); //in terms of steps
+  long t_stop(T_STOP/H); //in terms of steps
   double inf(100); //in ms
   double sup(400); //in ms
   assert(inf > T_START);
@@ -77,7 +82,7 @@ void Network::updateNetwork() {
       }
 
       updateOneNeuron(i);
-      }
+    }
 
     ++global_clock_;
 

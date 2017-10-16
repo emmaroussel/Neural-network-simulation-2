@@ -5,7 +5,7 @@
 double const T_START = 0;
 double const T_STOP = 500; //in ms
 double const H = 0.1; //path of time in ms (h)
-double const EXT_CURRENT = 1.01; //external current in pA
+double const EXT_CURRENT = 1.0; //external current in pA
 double const TAU = 20; //in ms
 double const REFRAC_TIME = 2; //refractory period in ms
 double const REFRAC_STEPS = REFRAC_TIME/H;

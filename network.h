@@ -14,6 +14,9 @@ class Network {
     Network(vector<Neuron*> all_neurons);
     ~Network();
 
+    //GETTER
+    vector<Neuron*> getAllNeurons() const;
+
     //METHODS
     void addNeuron(Neuron* n);
     void addConnexion(unsigned int id_n1, unsigned int id_n2);

@@ -1,5 +1,6 @@
 #include "neuron2.h"
 #include "network.h"
+#include "gtest/gtest.h"
 #include <fstream>
 #include <sstream>
 
