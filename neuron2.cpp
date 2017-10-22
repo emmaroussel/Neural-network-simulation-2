@@ -1,7 +1,5 @@
 #include "neuron2.h"
 
-
-//CONSTRUCTOR
 Neuron::Neuron() : membrane_potential_(V_INI), i_ext_(0), nb_spikes_(0),
                    spike_time_(0), refractory_(false), clock_(T_START/H),
                    refractory_steps_(0), rb_index_(0)
@@ -23,9 +21,12 @@ Neuron::Neuron(double potential) :
 
 }
 
+
+Neuron::~Neuron()
+{}
+
 /**********************************************************************************/
 
-//GETTERS
 double Neuron::getMembranePotential() const {
   return membrane_potential_;
 }
@@ -44,7 +45,6 @@ vector<double> Neuron::getAllMembranePotentials() const {
 
 /**********************************************************************************/
 
-//SETTERS
 void Neuron::setMembranePotential(double potential) {
   membrane_potential_ = potential;
 }
@@ -59,11 +59,10 @@ void Neuron::updateAllMembranePotentials(double potential) {
 
 /**********************************************************************************/
 
-//METHODS
-void Neuron::updateMembranePotential(double current, double h, double tau, double resistance) {
+void Neuron::updateMembranePotential() {
     setMembranePotential(
-      exp(-h/tau)*membrane_potential_
-      + current*resistance*(1-exp(-h/tau))
+      exp(-H/TAU)*membrane_potential_
+      + i_ext_*RESISTANCE*(1-exp(-H/TAU))
       + ring_buffer_[rb_index_]
     );
     ring_buffer_[rb_index_] = 0;
@@ -98,7 +97,7 @@ bool Neuron::update(long steps) {
      }
 
    } else {
-     updateMembranePotential(i_ext_, H, TAU, RESISTANCE);
+     updateMembranePotential();
    }
 
    updateRingBuffer();
@@ -117,8 +116,10 @@ void Neuron::receive(int delay, double j) {
 }
 
 void Neuron::updateRingBuffer() {
-  /*if the ring buffer index is at "the end" of the ring buffer,
-  then we move the read-out index to the first position*/
+  /*
+   * If the read-out index of the ring buffer is at "the end" of the
+   * ring buffer, then we move the read-out index to the first position.
+   */
   if (rb_index_ == ring_buffer_.size() - 1) {
     rb_index_ = 0;
   } else {

@@ -1,6 +1,13 @@
 #ifndef NETWORK_H
 #define NETWORK_H
 
+/*!
+ * \file network.h
+ * \brief Network class
+ * \author emma-roussel
+ * \version 0.5
+ */
+
 #include "Constants.hpp"
 #include "neuron2.h"
 #include <iostream>
@@ -8,27 +15,41 @@
 #include <cassert>
 using namespace std;
 
+
+  /*! \class Network
+   * \brief class simulating a network of neurons
+   *
+   * Simulate a network a neurons which interact via connexions.
+   * Spiking of neurons are handled by transferring an amplitude spike
+   * to the connected neurons.
+   */
+
 class Network {
   public :
-    //CONSTRUCTOR
+    //! Constructor
     Network(vector<Neuron*> all_neurons);
+    //! Destructor
     ~Network();
 
-    //GETTER
+    //! Getter for the neurons of the network
     vector<Neuron*> getAllNeurons() const;
 
-    //METHODS
+    //! Add a neuron to the network
     void addNeuron(Neuron* n);
+    //! Add a connexion (unidirectionnal) between 2 neurons
     void addConnexion(unsigned int id_n1, unsigned int id_n2);
+    //! Delete a connexion (unidirectionnal) between 2 neurons
     void deleteConnexion(unsigned int id_n1, unsigned int id_n2);
+    //! Update all the neurons of the network in a defined period of time
     void updateNetwork();
+    //! Update one neuron of the network
     void updateOneNeuron(unsigned int id_n);
 
   private :
-    long global_clock_;
-    vector<Neuron*> all_neurons_;
-    unsigned int nb_neurons_;
-    vector< vector<bool> > connexions_;
+    long global_clock_; /*!< global clock */
+    vector<Neuron*> all_neurons_; /*!< pointers on the neurons of the network */
+    unsigned int nb_neurons_; /*!< total number of neurons in the network */
+    vector< vector<bool> > connexions_; /*!< connexions between neurons */
 
 };
 

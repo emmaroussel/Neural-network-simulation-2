@@ -3,22 +3,22 @@
 
 //Numerical constants
 double const T_START = 0;
-double const T_STOP = 500; //in ms
-double const H = 0.1; //path of time in ms (h)
-double const EXT_CURRENT = 1.0; //external current in pA
-double const TAU = 20; //in ms
-double const REFRAC_TIME = 2; //refractory period in ms
-double const REFRAC_STEPS = REFRAC_TIME/H;
-double const RESISTANCE = 20;
-double const V_INI = -70; //initial potential
-double const V_THRS = 20; //V Threshold, in mV
-double const V_REFRAC = 0; //potential during refractory period, in mV
-double const V_RESET = 0; //potential after the refractory period
-//V_RESET must be below V_THRS to prevent spiking continuously
-
-double const J = 0.2; //amplitude spike in mV
-int const D = 15; //delay, already in steps (15 steps <=> 1.5ms)
-
-double const EPSILON = 0.1;
+double const T_STOP = 500; // simulation time in ms
+double const H = 0.1;  // integration time step in ms
+double const EXT_CURRENT = 1.0; // external current in pA
+double const TAU = 20; // membrane time constant in ms
+double const REFRAC_TIME = 2; // refractory period in ms
+double const REFRAC_STEPS = REFRAC_TIME/H; // number of steps in refractory period
+double const RESISTANCE = 20; // membrane resistance
+double const V_INI = -70; // initial potential in mV
+double const V_THRS = 20; // spike threshold
+double const V_REFRAC = 0; // membrane potential during refractory period in mV
+double const V_RESET = 0; // membrane potential after refractory period in mV
+/*
+ * V_RESET must be below V_THRS to prevent spiking continuously
+ */
+double const J = 0.2; // spike response amplitude in mV
+int const D = 1.5/H; // synaptic delay already in steps (-> 1.5ms)
+double const EPSILON = 0.1; // constant to compare double values 
 
 #endif
