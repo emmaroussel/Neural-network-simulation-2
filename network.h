@@ -13,6 +13,7 @@
 #include <iostream>
 #include <vector>
 #include <cassert>
+#include <random>
 using namespace std;
 
 
@@ -28,6 +29,8 @@ class Network {
   public :
     //! Constructor
     Network(vector<Neuron*> all_neurons);
+    //! Constructor
+    Network();
     //! Destructor
     ~Network();
 
@@ -49,7 +52,7 @@ class Network {
     long global_clock_; /*!< global clock */
     vector<Neuron*> all_neurons_; /*!< pointers on the neurons of the network */
     unsigned int nb_neurons_; /*!< total number of neurons in the network */
-    vector< vector<bool> > connexions_; /*!< connexions between neurons */
+    vector< vector<int> > connexions_; /*!< connexions between neurons */
 
 };
 

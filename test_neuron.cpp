@@ -13,7 +13,8 @@ using namespace std;
  */
 
 TEST (NeuronTest, MembranePotential) {
-  Neuron neuron(0);
+  Neuron neuron(true, false); // Excitatory neuron with no background noise
+  EXPECT_EQ(0, neuron.getMembranePotential());
   neuron.setIExt(1.0);
   neuron.update(1);
   EXPECT_EQ(RESISTANCE*(1-exp(-H/TAU)), neuron.getMembranePotential());
@@ -21,7 +22,7 @@ TEST (NeuronTest, MembranePotential) {
 
 
 TEST (NeuronTest, SpikeTimes) {
-  Neuron neuron;
+  Neuron neuron(true, false); // Excitatory neuron with no background noise
   neuron.setIExt(1.01);
   // We know that the spikes times are at 92.5ms, 186.9ms, 281.3ms
   // Before the first spike, number of spikes should be 0
@@ -41,7 +42,7 @@ TEST (NeuronTest, SpikeTimes) {
 }
 
 TEST (NeuronTest, PositiveInput) {
-  Neuron neuron;
+  Neuron neuron(true, false); // Excitatory neuron with no background noise
   neuron.setIExt(1.0);
 
   // Update one step
@@ -63,7 +64,7 @@ TEST (NeuronTest, PositiveInput) {
 }
 
 TEST (NeuronTest, NegativeInput) {
-  Neuron neuron;
+  Neuron neuron(true, false); // Excitatory neuron with no background noise
   neuron.setIExt(-1.0);
 
   // Update one step
@@ -84,9 +85,10 @@ TEST (NeuronTest, NegativeInput) {
 
 TEST (TwoNeuronsTest, SpikeTimeDelay) {
   vector<Neuron*> all_neurons;
-  all_neurons.push_back(new Neuron);
-  all_neurons.push_back(new Neuron);
-  all_neurons[0]->setMembranePotential(20); //! When we will update it, it will spike
+  // Excitatory neurons with no background noise
+  all_neurons.push_back(new Neuron(true, false));
+  all_neurons.push_back(new Neuron(true, false));
+  all_neurons[0]->setMembranePotential(20); // When we will update it, it will spike
   all_neurons[1]->setMembranePotential(0);
 
   all_neurons[0]->setIExt(1.01);
@@ -95,16 +97,17 @@ TEST (TwoNeuronsTest, SpikeTimeDelay) {
   Network network(all_neurons);
   network.addConnexion(0,1);
 
-  network.updateOneNeuron(0); //! update the first neuron (all_neurons[0])
-  double v_ini(0); //! membrane potential of all_neurons[1] when all_neurons[0] is spiking
-  double v_fin(0); //! membrane potential of all_neurons[1] when receiving J (after the delay)
+  network.updateOneNeuron(0); // update the first neuron (all_neurons[0])
+  double v_ini(0); // membrane potential of all_neurons[1] when all_neurons[0] is spiking
+  double v_fin(0); // membrane potential of all_neurons[1] when receiving J (after the delay)
   for (size_t i(0); i < D+1; ++i) {
       network.updateOneNeuron(1);
       if (i == 0) v_ini = (network.getAllNeurons()[1])->getMembranePotential();
       if (i == D) v_fin = (network.getAllNeurons()[1])->getMembranePotential();
   }
 
-  EXPECT_NEAR(v_fin, v_ini, 0.2);
+  double expected_value(all_neurons[0]->getJ()); // Equal to the response amplitude of the first neuron
+  EXPECT_NEAR(v_fin, v_ini, expected_value);
 }
 
 int main(int argc, char **argv) {

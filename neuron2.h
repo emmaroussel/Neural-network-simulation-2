@@ -14,6 +14,7 @@
 #include <array>
 #include <cmath>
 #include <cassert>
+#include <random>
 using namespace std;
 
 class Neuron {
@@ -22,6 +23,14 @@ class Neuron {
     Neuron();
     //! Constructor with initial membrane potential value
     Neuron(double potential);
+    //! Constructor with type of the neuron (excitatory : true, inhibitory : false)
+    Neuron(bool excitatory);
+    //! Constructor with type of the neuron and possibility to shut down the background noise
+    /*!
+     * Shutting down the background_noise is useful for testing the good behaviour
+     * of the functions (with test_neuron.cpp)
+     */
+    Neuron(bool excitatory, bool background_noise);
 
     //! Destructor
     ~Neuron();
@@ -34,6 +43,8 @@ class Neuron {
     long getSpikeTime() const;
     //! Getter for all the membrane potentials
     vector<double> getAllMembranePotentials() const;
+    //! Getter for J
+    double getJ() const;
 
     //! Setter for the membrane potential
     void setMembranePotential(double potential);
@@ -68,6 +79,11 @@ class Neuron {
      * We assume the delay here is maximum equal to 15 steps (see Constants.hpp)
      */
     size_t rb_index_; /*!< ring buffer index for read-out */
+    bool excitatory_; /*!< if true then the neuron is excitarory_ otherwise : inhibitory */
+    double j_;
+
+    bool background_noise_;
+    //to allow to check the good behaviour of the functions with/without this background_noise
 
 };
 

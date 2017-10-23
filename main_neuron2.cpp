@@ -5,7 +5,7 @@
 #include <sstream>
 
 int main() {
-
+/*
   size_t nb_neurons(2); //can be changed if we want more neurons
 
   vector<Neuron*> all_neurons;
@@ -24,7 +24,7 @@ int main() {
     /*
      * Each neuron receives input from 10% of the other neurons
      */
-    nb_connexions_per_neuron = 0.1*nb_neurons; //total connexions to be received
+/*    nb_connexions_per_neuron = 0.1*nb_neurons; //total connexions to be received
   } else {
     nb_connexions_per_neuron = 1;
   }
@@ -34,7 +34,7 @@ int main() {
      * We randomly choose a neuron to be a pre-synaptic neuron of the neuron (i)
      * until the total number of connexion for this neuron is reached.
      */
-    unsigned int nb_co(0);
+/*    unsigned int nb_co(0);
     unsigned int j(0);
     do {
       // ->random choice of j, avec j != i
@@ -55,7 +55,8 @@ int main() {
    * just now because we have 2 neurons and we want an
    * unidirectionnal connexion.
    */
-
+  Network network;
+  cout << "here" << endl;
   network.updateNetwork();
 
 /*****************************************************************************/
@@ -63,15 +64,15 @@ int main() {
   /*
    * We print the membrane potential values of the 2 neurons in files.
    */
-  print("membrane_potential_values.txt", *all_neurons[0]);
-  print("membrane_potential_values2.txt", *all_neurons[1]);
+  print("membrane_potential_values.txt", *(network.getAllNeurons()[0]));
+  print("membrane_potential_values2.txt", *(network.getAllNeurons()[1]));
 
 /*****************************************************************************/
 
-  for (size_t i(0); i < nb_neurons; ++i) {
+/*  for (size_t i(0); i < nb_neurons; ++i) {
     delete all_neurons[i];
   }
-  all_neurons.clear();
+  all_neurons.clear();*/ //c'était quand on alloué dans le main les new Neuron
 
   return 0;
 }

@@ -1,25 +1,59 @@
 #include "neuron2.h"
 
-Neuron::Neuron() : membrane_potential_(V_INI), i_ext_(0), nb_spikes_(0),
-                   spike_time_(0), refractory_(false), clock_(T_START/H),
-                   refractory_steps_(0), rb_index_(0)
+Neuron::Neuron() :
+  membrane_potential_(V_INI),
+  i_ext_(0), nb_spikes_(0), spike_time_(0),
+  refractory_(false), clock_(T_START/H),
+  refractory_steps_(0), rb_index_(0),
+  excitatory_(true),
+  background_noise_(true)
+
 {
   for (size_t i(0); i < ring_buffer_.size(); ++i) {
     ring_buffer_[i] = 0;
   }
 
+  if(excitatory_) {
+    j_ = JE;
+  } else {
+    j_ = JI;
+  }
 }
 
-Neuron::Neuron(double potential) :
-  membrane_potential_(potential), i_ext_(0), nb_spikes_(0),
+Neuron::Neuron(bool excitatory) :
+  membrane_potential_(V_INI), i_ext_(0), nb_spikes_(0),
   spike_time_(0), refractory_(false), clock_(T_START/H),
-  refractory_steps_(0), rb_index_(0)
+  refractory_steps_(0), rb_index_(0), excitatory_(excitatory),
+  background_noise_(true)
 {
   for (size_t i(0); i < ring_buffer_.size(); ++i) {
     ring_buffer_[i] = 0;
   }
 
+  if(excitatory_) {
+    j_ = JE;
+  } else {
+    j_ = JI;
+  }
 }
+
+Neuron::Neuron(bool excitatory, bool background_noise) :
+  membrane_potential_(V_INI), i_ext_(0), nb_spikes_(0),
+  spike_time_(0), refractory_(false), clock_(T_START/H),
+  refractory_steps_(0), rb_index_(0), excitatory_(excitatory),
+  background_noise_(background_noise)
+{
+  for (size_t i(0); i < ring_buffer_.size(); ++i) {
+    ring_buffer_[i] = 0;
+  }
+
+  if(excitatory_) {
+    j_ = JE;
+  } else {
+    j_ = JI;
+  }
+}
+
 
 
 Neuron::~Neuron()
@@ -43,6 +77,10 @@ vector<double> Neuron::getAllMembranePotentials() const {
   return allMembranePotentials_;
 }
 
+double Neuron::getJ() const {
+  return j_;
+}
+
 /**********************************************************************************/
 
 void Neuron::setMembranePotential(double potential) {
@@ -60,11 +98,16 @@ void Neuron::updateAllMembranePotentials(double potential) {
 /**********************************************************************************/
 
 void Neuron::updateMembranePotential() {
+  poisson_distribution<> poisson(V_EXT*C_EXCI*H*J); //so that we have V_EXT in mV/steps
+  random_device rd;
+  mt19937 gen(rd());
+
     setMembranePotential(
       exp(-H/TAU)*membrane_potential_
       + i_ext_*RESISTANCE*(1-exp(-H/TAU))
       + ring_buffer_[rb_index_]
     );
+    if (background_noise_) membrane_potential_ += poisson(gen);
     ring_buffer_[rb_index_] = 0;
 }
 
