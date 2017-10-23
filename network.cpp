@@ -47,9 +47,8 @@ void Network::deleteConnexion(unsigned int id_n1, unsigned int id_n2) {
 void Network::updateNetwork() {
 
   long t_stop(T_STOP/H); //in terms of integration steps
-  double inf(100); // in ms
-  double sup(400); // in ms
-  assert(inf > T_START);
+  double inf(0); // in ms
+  double sup(300); // in ms
   assert(sup < T_STOP);
   assert(inf < sup);
 

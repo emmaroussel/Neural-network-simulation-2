@@ -10,7 +10,6 @@ using namespace std;
  * \file test_neuron.cpp
  * \brief Tests
  * \author emma-roussel
- * \version 0.1
  */
 
 TEST (NeuronTest, MembranePotential) {
@@ -20,7 +19,70 @@ TEST (NeuronTest, MembranePotential) {
   EXPECT_EQ(RESISTANCE*(1-exp(-H/TAU)), neuron.getMembranePotential());
 }
 
-TEST (NeuronTest, SpikeTimeDelay) {
+
+TEST (NeuronTest, SpikeTimes) {
+  Neuron neuron;
+  neuron.setIExt(1.01);
+  // We know that the spikes times are at 92.5ms, 186.9ms, 281.3ms
+  // Before the first spike, number of spikes should be 0
+  neuron.update(924);
+  EXPECT_EQ(0, neuron.getNbSpikes());
+  // Just after the spike, spike number should be 1, and membrane potential 0.0
+  neuron.update(1);
+  EXPECT_EQ(0.0, neuron.getMembranePotential());
+  EXPECT_EQ(1, neuron.getNbSpikes());
+
+  // We check for the second spike
+  neuron.update(943); // (1869-(925+1)
+  EXPECT_EQ(1, neuron.getNbSpikes());
+  neuron.update(1);
+  EXPECT_EQ(0.0, neuron.getMembranePotential());
+  EXPECT_EQ(2, neuron.getNbSpikes());
+}
+
+TEST (NeuronTest, PositiveInput) {
+  Neuron neuron;
+  neuron.setIExt(1.0);
+
+  // Update one step
+  neuron.update(1);
+  EXPECT_EQ(RESISTANCE*(1-exp(-H/TAU)), neuron.getMembranePotential());
+
+  // Update many steps
+  neuron.update(10000);
+  // As the external current is 1.0, membrane potential should tend to 20 but
+  // should not reach it. The neuron should not spike
+  EXPECT_EQ(0, neuron.getNbSpikes());
+  EXPECT_GT(1E-3, fabs(19.999 - neuron.getMembranePotential()));
+
+  // When external current is 0, membrane potential should tend to 0
+  neuron.setIExt(0.0);
+  neuron.update(2000);
+  EXPECT_NEAR(0, neuron.getMembranePotential(), 1e-3);
+
+}
+
+TEST (NeuronTest, NegativeInput) {
+  Neuron neuron;
+  neuron.setIExt(-1.0);
+
+  // Update one step
+  neuron.update(1);
+  EXPECT_EQ(-RESISTANCE*(1-exp(-H/TAU)), neuron.getMembranePotential());
+
+  // Update many steps
+  neuron.update(10000);
+  // As the external current is -1.0, membrane potential should tend to -20
+  EXPECT_GT(1E-3, fabs(-19.999 - neuron.getMembranePotential()));
+
+  // When external current is 0, membrane potential should tend to 0
+  neuron.setIExt(0.0);
+  neuron.update(2000);
+  EXPECT_NEAR(0, neuron.getMembranePotential(), 1e-3);
+
+}
+
+TEST (TwoNeuronsTest, SpikeTimeDelay) {
   vector<Neuron*> all_neurons;
   all_neurons.push_back(new Neuron);
   all_neurons.push_back(new Neuron);
