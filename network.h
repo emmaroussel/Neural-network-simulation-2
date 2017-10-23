@@ -14,6 +14,7 @@
 #include <vector>
 #include <cassert>
 #include <random>
+#include <map>
 using namespace std;
 
 
@@ -36,6 +37,8 @@ class Network {
 
     //! Getter for the neurons of the network
     vector<Neuron*> getAllNeurons() const;
+    //! Getter for the map of spike times / corresponding neuron
+    map<double, vector<int> > getMap() const;
 
     //! Add a neuron to the network
     void addNeuron(Neuron* n);
@@ -53,6 +56,7 @@ class Network {
     vector<Neuron*> all_neurons_; /*!< pointers on the neurons of the network */
     unsigned int nb_neurons_; /*!< total number of neurons in the network */
     vector< vector<int> > connexions_; /*!< connexions between neurons */
+    map<double, vector<int> > spike_times_and_neurons_; /*!< map of all spike times linked to which neuron spiked */
 
 };
 

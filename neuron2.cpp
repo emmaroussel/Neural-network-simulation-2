@@ -98,7 +98,7 @@ void Neuron::updateAllMembranePotentials(double potential) {
 /**********************************************************************************/
 
 void Neuron::updateMembranePotential() {
-  poisson_distribution<> poisson(V_EXT*C_EXCI*H*J); //so that we have V_EXT in mV/steps
+  poisson_distribution<> poisson(V_EXT*C_EXT*H*J); //so that we have V_EXT in mV/steps
   random_device rd;
   mt19937 gen(rd());
 

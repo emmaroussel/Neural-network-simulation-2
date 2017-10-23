@@ -5,59 +5,11 @@
 #include <sstream>
 
 int main() {
-/*
-  size_t nb_neurons(2); //can be changed if we want more neurons
 
-  vector<Neuron*> all_neurons;
-  for (size_t i(0); i < nb_neurons; ++i) {
-    all_neurons.push_back(new Neuron);
-  }
-
-  // pour l'instant on veut que potentiel memb. de neuron2 = 0
-  all_neurons[1]->setMembranePotential(0);
-
-  Network network(all_neurons);
-
-  // Adding connexions between neurons -> can be done in the Network via a method !
-  unsigned int nb_connexions_per_neuron(0);
-  if (nb_neurons >= 10) { //! laisse ça comme ça pour l'instant car que 2 neurones
-    /*
-     * Each neuron receives input from 10% of the other neurons
-     */
-/*    nb_connexions_per_neuron = 0.1*nb_neurons; //total connexions to be received
-  } else {
-    nb_connexions_per_neuron = 1;
-  }
-
-  for (size_t i(0); i < nb_neurons; ++i) {
-    /*
-     * We randomly choose a neuron to be a pre-synaptic neuron of the neuron (i)
-     * until the total number of connexion for this neuron is reached.
-     */
-/*    unsigned int nb_co(0);
-    unsigned int j(0);
-    do {
-      // ->random choice of j, avec j != i
-      if (i != j) {
-        network.addConnexion(j, i);
-        // all_neurons_[i] is a post-synaptic neuron of all_neurons_[j]
-        ++nb_co;
-      } else {
-        j = 1; // à enlever quand j sera choisi randomly
-      }
-    } while (nb_co < nb_connexions_per_neuron);
-
-  }
-
-  network.deleteConnexion(1,0);
-  /*
-   * Delete connexion from neuron[1] to neuron[0],
-   * just now because we have 2 neurons and we want an
-   * unidirectionnal connexion.
-   */
   Network network;
-  cout << "here" << endl;
+  cout << "Network building done." << endl;
   network.updateNetwork();
+  cout << "Netword updatating done." << endl;
 
 /*****************************************************************************/
   void print(string name, Neuron neuron1);
@@ -68,11 +20,30 @@ int main() {
   print("membrane_potential_values2.txt", *(network.getAllNeurons()[1]));
 
 /*****************************************************************************/
+   ofstream out;
+   out.open("spikes_and_neurons_values.txt");
+   out.clear();
+      if (out.fail()) {
+         cerr << "Erreur lecture fichier" << endl;
+      } else {
+         map<double, vector<int> > spikes_and_neurons(network.getMap());
+         ostringstream texte;
+         texte << "Spike times" << " " << setw(4) << "|"
+               << " " << setw(4) << "Neuron n°" << endl;
+         for (map<double, vector<int> >::iterator i(spikes_and_neurons.begin());
+              i != spikes_and_neurons.end(); ++i) {
+                texte << i->first << " " << setw(13);
+                for (auto neuron_number : i->second) {
+                  texte << setw(2) << " " << neuron_number;
+                }
+                texte << endl;
+                texte << endl;
+              }
 
-/*  for (size_t i(0); i < nb_neurons; ++i) {
-    delete all_neurons[i];
-  }
-  all_neurons.clear();*/ //c'était quand on alloué dans le main les new Neuron
+           string potentialAsString = texte.str(); //! str() transforms the stream's content into string
+           out << potentialAsString << endl;
+           out.close();
+      }
 
   return 0;
 }

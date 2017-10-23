@@ -26,7 +26,7 @@ Network::Network() : global_clock_(0)
     all_neurons_.push_back(new Neuron(false));
   }
 
-  //! Initialize all connexions to 0
+  // Initialize all connexions to 0
   nb_neurons_ = all_neurons_.size();
   for (size_t i(0); i < nb_neurons_; ++i) {
     vector<int> subVector;
@@ -36,8 +36,10 @@ Network::Network() : global_clock_(0)
     }
   }
 
-    // For each neuron, we ramdomly choose 1000 excitatory neurons and 250
-    // inhibitory neurons that will target this particular neuron
+    /*
+     * For each neuron, we ramdomly choose 1000 excitatory neurons and 250
+     * inhibitory neurons that will target this particular neuron
+     */
     random_device rd;
     mt19937 gen(rd());
     // Excitatory neurons are from 0 to 9999 in the vector
@@ -65,9 +67,7 @@ Network::Network() : global_clock_(0)
       int r(distribIn(gen));
       addConnexion(r, i);
     }
-
   }
-
 
 }
 
@@ -83,6 +83,10 @@ Network::~Network()
 
 vector<Neuron*> Network::getAllNeurons() const {
   return all_neurons_;
+}
+
+map<double, vector<int> > Network::getMap() const {
+  return spike_times_and_neurons_;
 }
 
 /******************************************************************************/
@@ -191,6 +195,11 @@ void Network::updateNetwork() {
         */
        all_neurons_[post[i]]->receive(D, j);
      }
+
+     // Neuron has spiked : we add this time spike (corresponding to the global_clock_)
+     // and the index of the neuron which id_n to the map spike_times_and_neurons_
+     spike_times_and_neurons_[global_clock_].push_back(id_n);
+
 
    }
  }
