@@ -37,6 +37,8 @@ class Network {
 
     //! Getter for the neurons of the network
     vector<Neuron*> getAllNeurons() const;
+    //! Getter for the connexions of neurons in the network
+    vector< vector<int> > getConnexions() const;
     //! Getter for the map of spike times / corresponding neuron
     map<double, vector<int> > getMap() const;
 

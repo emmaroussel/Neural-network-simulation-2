@@ -9,14 +9,14 @@ int main() {
   Network network;
   cout << "Network building done." << endl;
   network.updateNetwork();
-  cout << "Netword updatating done." << endl;
+  cout << "Network updatating done." << endl;
 
 /*****************************************************************************/
   void print(string name, Neuron neuron1);
   /*
    * We print the membrane potential values of the 2 neurons in files.
    */
-  print("membrane_potential_values.txt", *(network.getAllNeurons()[0]));
+print("membrane_potential_values.txt", *(network.getAllNeurons()[0]));
   print("membrane_potential_values2.txt", *(network.getAllNeurons()[1]));
 
 /*****************************************************************************/

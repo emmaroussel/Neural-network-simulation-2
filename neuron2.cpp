@@ -107,7 +107,9 @@ void Neuron::updateMembranePotential() {
       + i_ext_*RESISTANCE*(1-exp(-H/TAU))
       + ring_buffer_[rb_index_]
     );
-    if (background_noise_) membrane_potential_ += poisson(gen);
+    if (background_noise_) {
+      membrane_potential_ += poisson(gen);
+    }
     ring_buffer_[rb_index_] = 0;
 }
 

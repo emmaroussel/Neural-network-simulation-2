@@ -25,12 +25,26 @@ int const D = 1.5/H; // synaptic delay already in steps (-> 1.5ms)
 
 double const V_TH = 0.01; // using the formula in Brunel's paper
 double const V_EXT = 2*V_TH; // firing external rate
+
 int const N = 12500; // number of neurons
-int const N_EXCI = 10000; // number of excitatory neurons
-int const N_INHI = 2500; // number of excitatory neurons
-int const C_EXCI = 1000; // Number of excitatory connexions for 1 neuron (10% * N_EXCI)
+int const N_EXCI = 0.8*N; // number of excitatory neurons
+int const N_INHI = 0.2*N; // number of excitatory neurons
+int const C_EXCI = 0.1*N_EXCI; // Number of excitatory connexions for 1 neuron (10% * N_EXCI)
 int const C_EXT = C_EXCI;
-int const C_INHI = 250; // Number of inhibitory connexions for 1 neuron (10% * N_INHI)
+int const C_INHI = 0.1*N_INHI; // Number of inhibitory connexions for 1 neuron (10% * N_INHI)
+
+//First index of the vector gathering the neurons (in Network)
+int const indexFirstExcitatoryNeuron = 0;
+//Because we first add all the excitatory neurons in the vector of neurons (in Network),
+//these excitatory neurons are from the first index to the N_EXCI one ; since we start
+//the vector from index 0 -> the last excitatory neuron will be at the N_EXCI-1 index.
+int const indexLastExcitatoryNeuron = N_EXCI - 1;
+
+//Index for the first inhibitory neuron, because we add all the inhibitory neurons at once
+//after adding the excitatory ones, the first inhibitory neuron will be at N_EXCI index.
+int const indexFirstInhibitoryNeuron = N_EXCI;
+//Index for the last inhibitory neuron = last index of the vector of neurons
+int const indexLastInhibitoryNeuron = N - 1;
 
 double const EPSILON = 0.1; // constant to compare double values
 

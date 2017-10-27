@@ -42,30 +42,25 @@ Network::Network() : global_clock_(0)
      */
     random_device rd;
     mt19937 gen(rd());
-    // Excitatory neurons are from 0 to 9999 in the vector
-    int indexFirstExcitatoryNeuron(0);
-    int indexLastExcitatoryNeuron(9999);
-    // Inhibitory neurons are from 10000 to 12499 in the vector
-    int indexFirstInhibitoryNeuron(10000);
-    int indexLastInhibitoryNeuron(12499);
     uniform_int_distribution<> distribEx(indexFirstExcitatoryNeuron, indexLastExcitatoryNeuron);
     uniform_int_distribution<> distribIn(indexFirstInhibitoryNeuron, indexLastInhibitoryNeuron);
+    //these indices are found in the Constants.hpp file
 
   // We initialize all the connexions of the neurons in the network
   for (size_t i(0); i < nb_neurons_; ++i) {
 
     // This neuron will be "target" by C_EXCI connexions from excitatory neurons
-    for (size_t i(0); i < C_EXCI; ++i) {
-      int r(distribEx(gen));
-      addConnexion(r, i);
+    for (size_t j(0); j < C_EXCI; ++j) {
+      int random_index(distribEx(gen));
+      addConnexion(random_index, i);
       // Neuron in position i of the vector all_neurons_ have a synaptic connexion
       // to neuron in position r : r -> i (i is a post-synaptic neuron of neuron r)
     }
 
     // This neuron will be "target" by C_INHI connexions from excitatory neurons
-    for (size_t i(0); i < C_INHI; ++i) {
-      int r(distribIn(gen));
-      addConnexion(r, i);
+    for (size_t k(0); k < C_INHI; ++k) {
+      int random_index(distribIn(gen));
+      addConnexion(random_index, i);
     }
   }
 
@@ -83,6 +78,10 @@ Network::~Network()
 
 vector<Neuron*> Network::getAllNeurons() const {
   return all_neurons_;
+}
+
+vector< vector<int> > Network::getConnexions() const {
+  return connexions_;
 }
 
 map<double, vector<int> > Network::getMap() const {

@@ -93,7 +93,7 @@ TEST (TwoNeuronsTest, SpikeTimeDelay) {
 
   all_neurons[0]->setIExt(1.01);
 
-  //! We have 2 neurons in the network
+  // We creat a network with 2 neurons
   Network network(all_neurons);
   network.addConnexion(0,1);
 
@@ -108,6 +108,58 @@ TEST (TwoNeuronsTest, SpikeTimeDelay) {
 
   double expected_value(all_neurons[0]->getJ()); // Equal to the response amplitude of the first neuron
   EXPECT_NEAR(v_fin, v_ini, expected_value);
+}
+
+TEST(NetworkTest, NumberConnexionsPerNeuron) {
+  /*
+   * Checking that a neuron actually has C_EXCI and C_INHI connexions
+   * This means this neuron receives C_EXCI connexions FROM excitatory neurons
+   * and C_INHI connexions FROM inhibitory neurons.
+   */
+
+  Network network; //We create a network with N neurons (N is defined in Constants.hpp)
+
+  //We check the number of connexions for the first neuron (index = 0), for example
+  int nb_exci_co(0); //number of excitatory connexions
+  int nb_inhi_co(0); //number of inhibitory connexions
+
+  size_t matrix_size(network.getAllNeurons().size());
+  vector< vector<int> > connexions(network.getConnexions());
+
+  for (size_t i(0); i < matrix_size; ++i) {
+    if (i <= indexLastExcitatoryNeuron) {
+      nb_exci_co += connexions[i][0];
+    }
+    if ((i > indexLastExcitatoryNeuron)and(i <= indexLastInhibitoryNeuron)) {
+      nb_inhi_co += connexions[i][0];
+    }
+  }
+
+  EXPECT_EQ(nb_exci_co, C_EXCI);
+  EXPECT_EQ(nb_inhi_co, C_INHI);
+
+}
+
+TEST(NetworkTest, ExcitatoryWeight) {
+  Network network;
+  vector<Neuron*> all_neurons(network.getAllNeurons());
+  bool positive_weight(true);
+  for (size_t i(0); i <= indexLastExcitatoryNeuron; ++i) {
+    if (all_neurons[i]->getJ() < 0) positive_weight = false;
+  }
+
+  EXPECT_TRUE(positive_weight);
+}
+
+TEST(NetworkTest, InhibitoryWeight) {
+  Network network;
+  vector<Neuron*> all_neurons(network.getAllNeurons());
+  bool negative_weight(true);
+  for (size_t i(indexFirstInhibitoryNeuron); i <= indexLastExcitatoryNeuron; ++i) {
+    if (all_neurons[i]->getJ() > 0) negative_weight = false;
+  }
+
+  EXPECT_TRUE(negative_weight);
 }
 
 int main(int argc, char **argv) {
