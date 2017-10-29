@@ -1,8 +1,8 @@
 #include <iostream>
 #include <vector>
 #include "gtest/gtest.h"
-#include "neuron2.h"
-#include "network.cpp"
+#include "neuron.h"
+#include "network.h"
 #include "Constants.hpp"
 using namespace std;
 
@@ -12,6 +12,7 @@ using namespace std;
  * \author emma-roussel
  */
 
+//! Tests correct computation of the membrane potential
 TEST (NeuronTest, MembranePotential) {
   Neuron neuron(true, false); // Excitatory neuron with no background noise
   EXPECT_EQ(0, neuron.getMembranePotential());
@@ -20,12 +21,12 @@ TEST (NeuronTest, MembranePotential) {
   EXPECT_EQ(RESISTANCE*(1-exp(-H/TAU)), neuron.getMembranePotential());
 }
 
-
+//! Tests correct behaviour of membrane potential by checking spike times
 TEST (NeuronTest, SpikeTimes) {
   Neuron neuron(true, false); // Excitatory neuron with no background noise
   neuron.setIExt(1.01);
   // We know that the spikes times are at 92.5ms, 186.9ms, 281.3ms
-  // Before the first spike, number of spikes should be 0
+  // Before the first spike, the number of spikes should be 0
   neuron.update(924);
   EXPECT_EQ(0, neuron.getNbSpikes());
   // Just after the spike, spike number should be 1, and membrane potential 0.0
@@ -41,6 +42,7 @@ TEST (NeuronTest, SpikeTimes) {
   EXPECT_EQ(2, neuron.getNbSpikes());
 }
 
+//! Tests correct behaviour of membrane potential with positive input (external current)
 TEST (NeuronTest, PositiveInput) {
   Neuron neuron(true, false); // Excitatory neuron with no background noise
   neuron.setIExt(1.0);
@@ -52,17 +54,18 @@ TEST (NeuronTest, PositiveInput) {
   // Update many steps
   neuron.update(10000);
   // As the external current is 1.0, membrane potential should tend to 20 but
-  // should not reach it. The neuron should not spike
+  // should not reach it. The neuron should not spike.
   EXPECT_EQ(0, neuron.getNbSpikes());
   EXPECT_GT(1E-3, fabs(19.999 - neuron.getMembranePotential()));
 
-  // When external current is 0, membrane potential should tend to 0
+  // When external current is 0, membrane potential should tend to 0.
   neuron.setIExt(0.0);
   neuron.update(2000);
   EXPECT_NEAR(0, neuron.getMembranePotential(), 1e-3);
 
 }
 
+//! Tests correct behaviour of membrane potential with negative input (external current)
 TEST (NeuronTest, NegativeInput) {
   Neuron neuron(true, false); // Excitatory neuron with no background noise
   neuron.setIExt(-1.0);
@@ -73,16 +76,17 @@ TEST (NeuronTest, NegativeInput) {
 
   // Update many steps
   neuron.update(10000);
-  // As the external current is -1.0, membrane potential should tend to -20
+  // As the external current is -1.0, membrane potential should tend to -20.
   EXPECT_GT(1E-3, fabs(-19.999 - neuron.getMembranePotential()));
 
-  // When external current is 0, membrane potential should tend to 0
+  // When external current is 0, membrane potential should tend to 0.
   neuron.setIExt(0.0);
   neuron.update(2000);
   EXPECT_NEAR(0, neuron.getMembranePotential(), 1e-3);
 
 }
 
+//! Tests correct transmission of spikes (with correct delay) between two neurons
 TEST (TwoNeuronsTest, SpikeTimeDelay) {
   vector<Neuron*> all_neurons;
   // Excitatory neurons with no background noise
@@ -93,7 +97,7 @@ TEST (TwoNeuronsTest, SpikeTimeDelay) {
 
   all_neurons[0]->setIExt(1.01);
 
-  // We creat a network with 2 neurons
+  // We create a network with 2 neurons
   Network network(all_neurons);
   network.addConnexion(0,1);
 
@@ -110,6 +114,7 @@ TEST (TwoNeuronsTest, SpikeTimeDelay) {
   EXPECT_NEAR(v_fin, v_ini, expected_value);
 }
 
+//! Tests correct number of connexions of a neuron in the network (of 12500 neurons)
 TEST(NetworkTest, NumberConnexionsPerNeuron) {
   /*
    * Checking that a neuron actually has C_EXCI and C_INHI connexions
@@ -119,7 +124,7 @@ TEST(NetworkTest, NumberConnexionsPerNeuron) {
 
   Network network; //We create a network with N neurons (N is defined in Constants.hpp)
 
-  //We check the number of connexions for the first neuron (index = 0), for example
+  //We check the number of connexions for the first neuron (index = 0) for example
   int nb_exci_co(0); //number of excitatory connexions
   int nb_inhi_co(0); //number of inhibitory connexions
 
@@ -140,6 +145,7 @@ TEST(NetworkTest, NumberConnexionsPerNeuron) {
 
 }
 
+//! Verifies that the weight of excitatory neurons are positive
 TEST(NetworkTest, ExcitatoryWeight) {
   Network network;
   vector<Neuron*> all_neurons(network.getAllNeurons());
@@ -151,6 +157,7 @@ TEST(NetworkTest, ExcitatoryWeight) {
   EXPECT_TRUE(positive_weight);
 }
 
+//! Verifies that the weight of inhibitory neurons are negative
 TEST(NetworkTest, InhibitoryWeight) {
   Network network;
   vector<Neuron*> all_neurons(network.getAllNeurons());

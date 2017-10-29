@@ -3,7 +3,7 @@
 Network::Network(vector<Neuron*> all_neurons) :
   global_clock_(0), all_neurons_(all_neurons)
 {
-  //! When creating the network, the neurons are not connected yet
+  // When creating the network, the neurons are not connected yet
   nb_neurons_ = all_neurons_.size();
   for (size_t i(0); i < nb_neurons_; ++i) {
     vector<int> subVector;
@@ -13,6 +13,7 @@ Network::Network(vector<Neuron*> all_neurons) :
     }
   }
 }
+
 
 Network::Network() : global_clock_(0)
 {
@@ -53,11 +54,15 @@ Network::Network() : global_clock_(0)
     for (size_t j(0); j < C_EXCI; ++j) {
       int random_index(distribEx(gen));
       addConnexion(random_index, i);
-      // Neuron in position i of the vector all_neurons_ have a synaptic connexion
-      // to neuron in position r : r -> i (i is a post-synaptic neuron of neuron r)
+      /*
+       * Neuron in position i of the vector all_neurons_ have a synaptic connexion
+       * to neuron in position random_index :
+       * random_index neuron -> i neuron
+       * (i is a post-synaptic neuron of neuron random_index)
+       */
     }
 
-    // This neuron will be "target" by C_INHI connexions from excitatory neurons
+    // This neuron will be "target" by C_INHI connexions from inhibitory neurons
     for (size_t k(0); k < C_INHI; ++k) {
       int random_index(distribIn(gen));
       addConnexion(random_index, i);
@@ -65,6 +70,7 @@ Network::Network() : global_clock_(0)
   }
 
 }
+
 
 Network::~Network()
 {
@@ -99,8 +105,10 @@ void Network::addConnexion(unsigned int id_n1, unsigned int id_n2) {
     assert(id_n1 < nb_neurons_);
     assert(id_n2 < nb_neurons_);
     connexions_[id_n1][id_n2] += 1;
-    // Neuron2 (n2) is a post-synaptic neuron of neuron1 (n1) (for 1 connexion)
-    // It is possible to have multiple connexions between the same neurons
+    /*
+     * Neuron2 (n2) is a post-synaptic neuron of neuron1 (n1) (for 1 connexion)
+     * It is possible to have multiple connexions between the same neurons.
+     */
 }
 
 void Network::deleteConnexion(unsigned int id_n1, unsigned int id_n2) {
@@ -126,8 +134,10 @@ void Network::updateNetwork() {
     /*
      * Update the input current, if we assume the input current is the same
      * for all neurons.
+     * inf and sup are useful is we want to have a non-zero external current
+     * during a precise period of time during the simulation.
      */
-    bool zero(true); //If the external current is 0, then this boolean is true
+    bool zero(true); // If the external current is 0, then this boolean is true
     if ((global_clock_ >= inf) and (global_clock_ <= sup)) {
       zero = false;
     } else {
@@ -137,16 +147,12 @@ void Network::updateNetwork() {
     for (size_t i(0); i < all_neurons_.size(); ++i) {
       assert(all_neurons_[i] != nullptr);
 
-      /*all_neurons_[i]->setIExt(0); // à enlever là c'est juste pour que l'input current du neuron2 soit = 0
-      if (i == 0) { // à enlever c'est juste pour que input current neuron2=0 et pas neuron1
-        // We update the input current for the neuron 1*/
         if (zero) {
           all_neurons_[i]->setIExt(0);
         } else {
           all_neurons_[i]->setIExt(EXT_CURRENT);
         }
-        // Since EXT_CURRENT = 0.O (Constants.hpp) it will always be zero
-      //}
+        // Since EXT_CURRENT = 0.0 (Constants.hpp) it will always be zero
 
       updateOneNeuron(i);
     }
@@ -195,8 +201,10 @@ void Network::updateNetwork() {
        all_neurons_[post[i]]->receive(D, j);
      }
 
-     // Neuron has spiked : we add this time spike (corresponding to the global_clock_)
-     // and the index of the neuron which id_n to the map spike_times_and_neurons_
+     /*
+      * Neuron has spiked : we add this time spike (corresponding to the global_clock_)
+      * and the index of the neuron which id_n to the map spike_times_and_neurons_
+      */
      spike_times_and_neurons_[global_clock_].push_back(id_n);
 
 
