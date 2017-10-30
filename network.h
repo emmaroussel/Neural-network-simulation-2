@@ -79,6 +79,9 @@ class Network {
      */
     vector<double> getSpikeTimes() const;
 
+    //! Create all the neurons in the network
+    void create();
+
     //! Add a neuron to the network
     /*!
      * \param n the pointer of a neuron we want to add to the list of neurons of the network
@@ -93,19 +96,12 @@ class Network {
      */
     void addConnexion(unsigned int id_n1, unsigned int id_n2);
 
-    //! Delete a connexion (unidirectionnal) between 2 neurons
-    /*!
-     * \param id_n1 index of the pre-synaptic neuron
-     * \param id_n2 index of the post-synaptic neuron
-     */
-//    void deleteConnexion(unsigned int id_n1, unsigned int id_n2);
-
     //! Update all the neurons of the network in a defined period of time
     /*!
      * Updates each neuron of the network one by one, one (time) step at a time
      * by calling the updateOneNeuron function.
      */
-    void updateNetwork();
+    void updateNetwork(long simulation_time);
 
     //! Update one neuron of the network
     /*!

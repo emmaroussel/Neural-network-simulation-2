@@ -4,68 +4,16 @@ Network::Network(vector<Neuron*> all_neurons) :
   global_clock_(0), all_neurons_(all_neurons), nb_neurons_(all_neurons.size())
 {
   // When creating the network, the neurons are not connected yet
-for (size_t i(0); i < nb_neurons_; ++i) {
-  vector<size_t> subVector;
-  targets_.push_back(subVector);
-}
-
-}
-
-
-Network::Network() : global_clock_(0)
-{
-  // We create N_EXCI excitatory neurons
-  for (size_t i(0); i < N_EXCI; ++i) {
-    all_neurons_.push_back(new Neuron(true));
-  }
-
-  // We create N_INHI inhibitory neurons
-  for (size_t i(0); i < N_INHI; ++i) {
-    all_neurons_.push_back(new Neuron(false));
-  }
-
-  // Initialize all connexions to 0
-  nb_neurons_ = all_neurons_.size();
-
   for (size_t i(0); i < nb_neurons_; ++i) {
     vector<size_t> subVector;
     targets_.push_back(subVector);
   }
 
-    /*
-     * For each neuron, we ramdomly choose 1000 excitatory neurons and 250
-     * inhibitory neurons that will target this particular neuron
-     */
-    random_device rd;
-    mt19937 gen(rd());
-    uniform_int_distribution<> distribEx(indexFirstExcitatoryNeuron, indexLastExcitatoryNeuron);
-    uniform_int_distribution<> distribIn(indexFirstInhibitoryNeuron, indexLastInhibitoryNeuron);
-    //these indices are found in the Constants.hpp file
-
-  // We initialize all the connexions of the neurons in the network
-  for (size_t i(0); i < nb_neurons_; ++i) {
-
-    // This neuron will be "target" by C_EXCI connexions from excitatory neurons
-    for (size_t j(0); j < C_EXCI; ++j) {
-      int random_index(distribEx(gen));
-      addConnexion(random_index, i);
-
-      /*
-       * Neuron in position i of the vector all_neurons_ have a synaptic connexion
-       * to neuron in position random_index :
-       * random_index neuron -> i neuron
-       * (i is a post-synaptic neuron of neuron random_index)
-       */
-    }
-
-    // This neuron will be "target" by C_INHI connexions from inhibitory neurons
-    for (size_t k(0); k < C_INHI; ++k) {
-      int random_index(distribIn(gen));
-      addConnexion(random_index, i);
-    }
-  }
-
 }
+
+
+Network::Network() : global_clock_(0), nb_neurons_(0)
+{}
 
 
 Network::~Network()
@@ -96,6 +44,32 @@ vector<double> Network::getSpikeTimes() const {
 
 /******************************************************************************/
 
+void Network::create() {
+  // We create N_EXCI excitatory neurons
+  for (size_t i(0); i < N_EXCI; ++i) {
+    all_neurons_.push_back(new Neuron(true));
+  }
+
+  // We create N_INHI inhibitory neurons
+  for (size_t i(0); i < N_INHI; ++i) {
+    all_neurons_.push_back(new Neuron(false));
+  }
+
+  // To avoid segmentation fault
+  for (size_t i(0); i < nb_neurons_; ++i) {
+    vector<size_t> subVector;
+    targets_.push_back(subVector);
+  }
+
+  nb_neurons_ = all_neurons_.size();
+
+  // When creating the network, the neurons are not connected yet
+  for (size_t i(0); i < nb_neurons_; ++i) {
+    vector<size_t> subVector;
+    targets_.push_back(subVector);
+  }
+}
+
 void Network::addNeuron(Neuron* n) {
   assert(n != nullptr);
   all_neurons_.push_back(n);
@@ -106,24 +80,16 @@ void Network::addConnexion(unsigned int id_n1, unsigned int id_n2) {
     assert(id_n2 < nb_neurons_);
 
     targets_[id_n1].push_back(id_n2);
-  //  weight[id_n1].push_back(weight);
-  //  connexions_[id_n1][id_n2] += 1;
     /*
      * Neuron2 (n2) is a post-synaptic neuron of neuron1 (n1) (for 1 connexion)
      * It is possible to have multiple connexions between the same neurons.
      */
 }
 
-/*void Network::deleteConnexion(unsigned int id_n1, unsigned int id_n2) {
-    assert(id_n1 < nb_neurons_);
-    assert(id_n2 < nb_neurons_);
-    connexions_[id_n1][id_n2] -= 1;
-}*/
 
+void Network::updateNetwork(long simulation_time) {
 
-void Network::updateNetwork() {
-
-  long t_stop(T_STOP/H); //in terms of integration steps
+  long t_stop(simulation_time/H); //in terms of integration steps
   double inf(0); // in ms
   double sup(100); // in ms
   assert(inf < sup);

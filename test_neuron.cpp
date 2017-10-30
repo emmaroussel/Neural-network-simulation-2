@@ -3,6 +3,7 @@
 #include "gtest/gtest.h"
 #include "neuron.h"
 #include "network.h"
+#include "experiment.h"
 #include "Constants.hpp"
 using namespace std;
 
@@ -122,14 +123,16 @@ TEST(NetworkTest, NumberConnexionsPerNeuron) {
    * and C_INHI connexions FROM inhibitory neurons.
    */
 
-  Network network; //We create a network with N neurons (N is defined in Constants.hpp)
+   Experiment experiment;
+   experiment.connect();
 
   //We check the number of connexions for the first neuron (index = 0) for example
   int nb_exci_co(0); //number of excitatory connexions
   int nb_inhi_co(0); //number of inhibitory connexions
-  size_t nb_neurons(network.getAllNeurons().size());
+  size_t nb_neurons((experiment.getNetwork()->getAllNeurons()).size());
+  assert(nb_neurons > 0);
 
-  vector< vector<size_t> > targets(network.getTargets());
+  vector< vector<size_t> > targets(experiment.getNetwork()->getTargets());
 
     for (size_t i(0); i < nb_neurons; ++i) {
       size_t row_size(targets[i].size());
@@ -151,8 +154,10 @@ TEST(NetworkTest, NumberConnexionsPerNeuron) {
 
 //! Verifies that the weight of excitatory neurons are positive
 TEST(NetworkTest, ExcitatoryWeight) {
-  Network network;
-  vector<Neuron*> all_neurons(network.getAllNeurons());
+  Experiment experiment;
+  experiment.connect();
+
+  vector<Neuron*> all_neurons(experiment.getNetwork()->getAllNeurons());
   bool positive_weight(true);
   for (size_t i(0); i <= indexLastExcitatoryNeuron; ++i) {
     if (all_neurons[i]->getJ() < 0) positive_weight = false;
@@ -163,8 +168,10 @@ TEST(NetworkTest, ExcitatoryWeight) {
 
 //! Verifies that the weight of inhibitory neurons are negative
 TEST(NetworkTest, InhibitoryWeight) {
-  Network network;
-  vector<Neuron*> all_neurons(network.getAllNeurons());
+  Experiment experiment;
+  experiment.connect();
+
+  vector<Neuron*> all_neurons(experiment.getNetwork()->getAllNeurons());
   bool negative_weight(true);
   for (size_t i(indexFirstInhibitoryNeuron); i <= indexLastExcitatoryNeuron; ++i) {
     if (all_neurons[i]->getJ() > 0) negative_weight = false;

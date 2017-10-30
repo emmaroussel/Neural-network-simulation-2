@@ -1,5 +1,6 @@
 #include "neuron.h"
 #include "network.h"
+#include "experiment.h"
 #include "gtest/gtest.h"
 #include <fstream>
 #include <sstream>
@@ -11,43 +12,17 @@ int main() {
   int execution_time;
   start = clock();
 
-  Network network;
-  clock_t stop1(clock());
-  cout << "Network building done. (" << stop1/(CLOCKS_PER_SEC/1000) << "ms)" << endl;
-
-  network.updateNetwork();
-  clock_t stop2(clock() - stop1);
-  cout << "Network updatating done. (" << stop2/(CLOCKS_PER_SEC/1000) << "ms)" << endl;
+  Experiment experiment;
+  experiment.connect();
+  experiment.run(1000); //run for 100 ms
+  experiment.save_spikes("spikes_times_neurons");
 
 /*****************************************************************************/
   void print(string name, Neuron neuron1);
   /*
-   * We print the membrane potential values of the first neuron in a file.
+   * We can print the membrane potential values of any neuron in a file.
    */
-print("membrane_potential_values.txt", *(network.getAllNeurons()[0]));
-
-
 /*****************************************************************************/
-   ofstream out;
-   out.open("spikes_times_neurons.txt");
-   out.clear();
-      if (out.fail()) {
-         cerr << "Erreur lecture fichier" << endl;
-      } else {
-        vector<double> spikeTimes(network.getSpikeTimes());
-        vector<size_t> neurons_indexes(network.getNeuronsIndexes());
-        double spike_size(spikeTimes.size());
-        assert(spike_size == neurons_indexes.size());
-        ostringstream texte;
-
-         for (size_t i(0); i < spike_size; ++i) {
-              texte << spikeTimes[i]*H << '\t'<< neurons_indexes[i] << '\n';
-          }
-
-           string potentialAsString = texte.str(); // str() transforms the stream's content into string
-           out << potentialAsString << endl;
-           out.close();
-      }
 
   clock_t stop(clock());
   execution_time = (stop - start)/(CLOCKS_PER_SEC/1000);
