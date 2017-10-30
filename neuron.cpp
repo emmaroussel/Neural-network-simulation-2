@@ -98,14 +98,16 @@ void Neuron::updateAllMembranePotentials(double potential) {
 /**********************************************************************************/
 
 void Neuron::updateMembranePotential() {
-  poisson_distribution<> poisson(V_EXT*C_EXT*H*J); //so that we have V_EXT in mV/steps
-  random_device rd;
-  mt19937 gen(rd());
+  static poisson_distribution<> poisson(nu_EXT*H); //so that we have V_EXT in 1/steps
+  static random_device rd;
+  static mt19937 gen(rd());
 
   membrane_potential_ = C1*membrane_potential_ + i_ext_*C2 + ring_buffer_[rb_index_];
 
     if (background_noise_) {
-      membrane_potential_ += poisson(gen);
+      membrane_potential_ += JEXT*poisson(gen);
+      // poisson(gen) is a random number representing the number of spikes coming
+      // from the external (excitatory) neurons.
     }
     ring_buffer_[rb_index_] = 0;
 }

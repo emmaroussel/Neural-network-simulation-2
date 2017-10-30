@@ -1,17 +1,14 @@
 #include "network.h"
 
 Network::Network(vector<Neuron*> all_neurons) :
-  global_clock_(0), all_neurons_(all_neurons)
+  global_clock_(0), all_neurons_(all_neurons), nb_neurons_(all_neurons.size())
 {
   // When creating the network, the neurons are not connected yet
-  nb_neurons_ = all_neurons_.size();
-  for (size_t i(0); i < nb_neurons_; ++i) {
-    vector<int> subVector;
-    connexions_.push_back(subVector);
-    for (size_t j(0); j < nb_neurons_; ++j) {
-      connexions_[i].push_back(0);
-    }
-  }
+for (size_t i(0); i < nb_neurons_; ++i) {
+  vector<size_t> subVector;
+  targets_.push_back(subVector);
+}
+
 }
 
 
@@ -29,12 +26,10 @@ Network::Network() : global_clock_(0)
 
   // Initialize all connexions to 0
   nb_neurons_ = all_neurons_.size();
+
   for (size_t i(0); i < nb_neurons_; ++i) {
-    vector<int> subVector;
-    connexions_.push_back(subVector);
-    for (size_t j(0); j < nb_neurons_; ++j) {
-      connexions_[i].push_back(0);
-    }
+    vector<size_t> subVector;
+    targets_.push_back(subVector);
   }
 
     /*
@@ -54,6 +49,7 @@ Network::Network() : global_clock_(0)
     for (size_t j(0); j < C_EXCI; ++j) {
       int random_index(distribEx(gen));
       addConnexion(random_index, i);
+
       /*
        * Neuron in position i of the vector all_neurons_ have a synaptic connexion
        * to neuron in position random_index :
@@ -86,12 +82,16 @@ vector<Neuron*> Network::getAllNeurons() const {
   return all_neurons_;
 }
 
-vector< vector<int> > Network::getConnexions() const {
-  return connexions_;
+vector< vector<size_t> > Network::getTargets() const {
+  return targets_;
 }
 
-map<double, vector<int> > Network::getMap() const {
-  return spike_times_and_neurons_;
+vector<size_t>  Network::getNeuronsIndexes() const {
+  return neurons_idx_;
+}
+
+vector<double> Network::getSpikeTimes() const {
+  return spike_times_;
 }
 
 /******************************************************************************/
@@ -104,18 +104,21 @@ void Network::addNeuron(Neuron* n) {
 void Network::addConnexion(unsigned int id_n1, unsigned int id_n2) {
     assert(id_n1 < nb_neurons_);
     assert(id_n2 < nb_neurons_);
-    connexions_[id_n1][id_n2] += 1;
+
+    targets_[id_n1].push_back(id_n2);
+  //  weight[id_n1].push_back(weight);
+  //  connexions_[id_n1][id_n2] += 1;
     /*
      * Neuron2 (n2) is a post-synaptic neuron of neuron1 (n1) (for 1 connexion)
      * It is possible to have multiple connexions between the same neurons.
      */
 }
 
-void Network::deleteConnexion(unsigned int id_n1, unsigned int id_n2) {
+/*void Network::deleteConnexion(unsigned int id_n1, unsigned int id_n2) {
     assert(id_n1 < nb_neurons_);
     assert(id_n2 < nb_neurons_);
     connexions_[id_n1][id_n2] -= 1;
-}
+}*/
 
 
 void Network::updateNetwork() {
@@ -173,40 +176,31 @@ void Network::updateNetwork() {
     * its post-synaptic neurons.
     */
    if (spike) {
+      /*
+       * We look for the post-syn neurons of neuron of index id_n.
+       * The neuron id_N has a number of connexions greater than zero with each
+       * of its post-synaptic neurons. (We look in the connexion matrix, only
+       * in the id_n row)
+       * These neurons receive an amplitude response from neuron id_n which
+       * is proportionnal to the number of connexions between neuron id_n
+       * and the post-synaptic neuron concerned.
+       */
+     double j_id_n(all_neurons_[id_n]->getJ()); // weight of a connexion from the id_n neuron
+     size_t nb_targets(targets_[id_n].size());
+     for (size_t i(0); i < nb_targets; ++i) {
+       assert(all_neurons_[targets_[id_n][i]] != nullptr);
 
-     vector<size_t> post;
-     vector<int> nb_connexions_with_each_postsyn;
-     /*
-      * We look for the post-syn neurons and store their index.
-      * We store the number of connexions between this neuron and each of his
-      * post-synaptic neurons since this number can be different (from 0 or 1).
-      */
-     for (size_t i(0); i < nb_neurons_; ++i) {
-       if (connexions_[id_n][i] > 0) {
-         post.push_back(i);
-         nb_connexions_with_each_postsyn.push_back(connexions_[id_n][i]);
-       }
+       all_neurons_[targets_[id_n][i]]->receive(D, j_id_n);
      }
 
-     size_t nb_post(post.size()); // Number of post-synaptic neurons
-     for (size_t i(0); i < nb_post; ++i) {
-       assert(all_neurons_[post[i]] != nullptr);
-       double j; // spike response amplitude
-       j = (all_neurons_[id_n]->getJ())*(nb_connexions_with_each_postsyn[i]);
-       /*
-        * = spike response amplitude of the neuron
-        * (which is different between excitatory and inhibitory neurons)
-        * multiplied by the number of connexions between these 2 neurons.
-        */
-       all_neurons_[post[i]]->receive(D, j);
-     }
 
      /*
       * Neuron has spiked : we add this time spike (corresponding to the global_clock_)
-      * and the index of the neuron which id_n to the map spike_times_and_neurons_
+      * to spike_times_ ;
+      * we add the index of the neuron (id_n) to neurons_idx_
       */
-     spike_times_and_neurons_[global_clock_].push_back(id_n);
-
+      spike_times_.push_back(global_clock_);
+      neurons_idx_.push_back(id_n);
 
    }
  }

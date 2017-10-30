@@ -61,18 +61,23 @@ class Network {
      */
     vector<Neuron*> getAllNeurons() const;
 
-    //! Getter for the connexions of neurons in the network
+    //! Getter for the targets (link with post-synaptic neurons)
     /*!
-     * \return all the connexions between neurons
+     * \return targets for each neuron
      */
-    vector< vector<int> > getConnexions() const;
+    vector< vector<size_t> > getTargets() const;
 
-    //! Getter for the map of spike times / corresponding neuron
+     //! Getter for the neurons which have spiked
+     /*!
+      * \return the neurons which have spiked
+      */
+    vector<size_t>  getNeuronsIndexes() const;
+
+    //! Getter for the spike times
     /*!
-     * \return The times where at least one neuron has spiked, and the number(s) of the neuron(s) which has spiked
+     * \return the spike times
      */
-    map<double, vector<int> > getMap() const;
-
+    vector<double> getSpikeTimes() const;
 
     //! Add a neuron to the network
     /*!
@@ -84,6 +89,7 @@ class Network {
     /*!
      * \param id_n1 index of the pre-synaptic neuron
      * \param id_n2 index of the post-synaptic neuron
+     * \param weight is the weight of the connexion
      */
     void addConnexion(unsigned int id_n1, unsigned int id_n2);
 
@@ -92,7 +98,7 @@ class Network {
      * \param id_n1 index of the pre-synaptic neuron
      * \param id_n2 index of the post-synaptic neuron
      */
-    void deleteConnexion(unsigned int id_n1, unsigned int id_n2);
+//    void deleteConnexion(unsigned int id_n1, unsigned int id_n2);
 
     //! Update all the neurons of the network in a defined period of time
     /*!
@@ -115,9 +121,12 @@ class Network {
     long global_clock_; /*!< global clock */
     vector<Neuron*> all_neurons_; /*!< pointers on the neurons of the network */
     unsigned int nb_neurons_; /*!< total number of neurons in the network */
-    vector< vector<int> > connexions_; /*!< connexions between neurons */
-    map<double, vector<int> > spike_times_and_neurons_; /*!< map of all spike times linked to which neuron spiked */
+  //  vector< vector<int> > connexions_; /*!< connexions between neurons */
+    vector<double> spike_times_; /*!< all the spike times */
+    vector<size_t> neurons_idx_; /*!< indexes of the neurons which have spiked */
 
+    vector< vector<size_t> > targets_; /*!< gathers the post-synaptic neurons for each neuron*/
+  //  vector< vector<double> weight_; /*!< connexion weights for each connexion between neurons*/
 };
 
 #endif

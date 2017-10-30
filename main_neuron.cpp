@@ -14,7 +14,7 @@ int main() {
   Network network;
   clock_t stop1(clock());
   cout << "Network building done. (" << stop1/(CLOCKS_PER_SEC/1000) << "ms)" << endl;
-  
+
   network.updateNetwork();
   clock_t stop2(clock() - stop1);
   cout << "Network updatating done. (" << stop2/(CLOCKS_PER_SEC/1000) << "ms)" << endl;
@@ -22,31 +22,27 @@ int main() {
 /*****************************************************************************/
   void print(string name, Neuron neuron1);
   /*
-   * We print the membrane potential values of the 2 neurons in files.
+   * We print the membrane potential values of the first neuron in a file.
    */
 print("membrane_potential_values.txt", *(network.getAllNeurons()[0]));
-  print("membrane_potential_values2.txt", *(network.getAllNeurons()[1]));
+
 
 /*****************************************************************************/
    ofstream out;
-   out.open("spikes_and_neurons_values.txt");
+   out.open("spikes_times_neurons.txt");
    out.clear();
       if (out.fail()) {
          cerr << "Erreur lecture fichier" << endl;
       } else {
-         map<double, vector<int> > spikes_and_neurons(network.getMap());
-         ostringstream texte;
-         texte << "Spike times" << " " << setw(4) << "|"
-               << " " << setw(4) << "Neuron n°" << endl;
-         for (map<double, vector<int> >::iterator i(spikes_and_neurons.begin());
-              i != spikes_and_neurons.end(); ++i) {
-                texte << i->first << " " << setw(13);
-                for (auto neuron_number : i->second) {
-                  texte << setw(2) << " " << neuron_number;
-                }
-                texte << endl;
-                texte << endl;
-              }
+        vector<double> spikeTimes(network.getSpikeTimes());
+        vector<size_t> neurons_indexes(network.getNeuronsIndexes());
+        double spike_size(spikeTimes.size());
+        assert(spike_size == neurons_indexes.size());
+        ostringstream texte;
+
+         for (size_t i(0); i < spike_size; ++i) {
+              texte << spikeTimes[i]*H << '\t'<< neurons_indexes[i] << '\n';
+          }
 
            string potentialAsString = texte.str(); // str() transforms the stream's content into string
            out << potentialAsString << endl;

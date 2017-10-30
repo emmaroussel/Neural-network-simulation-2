@@ -24,7 +24,7 @@ using namespace std;
  * between these two type of neurons is the sign and value of their response amplitude.
  * The neuron can be updated during a period of time. This will mainly update its
  * membrane potential and handle the behaviour of the neuron if it exceeds the
- * membrane potential threshold. 
+ * membrane potential threshold.
  */
 class Neuron {
   public :
@@ -132,7 +132,7 @@ class Neuron {
      * \param j total response amplitude (if there are multiple connexions between
      * the neuron which has spiked and this neuron, the response amplitude will be
      * multiplied by the number of connexions between these two neurons).
-     * 
+     *
      * Stores the amplitude response in a ring buffer at the correct position
      * (taking into consideration the delay)
      */

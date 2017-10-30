@@ -127,18 +127,22 @@ TEST(NetworkTest, NumberConnexionsPerNeuron) {
   //We check the number of connexions for the first neuron (index = 0) for example
   int nb_exci_co(0); //number of excitatory connexions
   int nb_inhi_co(0); //number of inhibitory connexions
+  size_t nb_neurons(network.getAllNeurons().size());
 
-  size_t matrix_size(network.getAllNeurons().size());
-  vector< vector<int> > connexions(network.getConnexions());
+  vector< vector<size_t> > targets(network.getTargets());
 
-  for (size_t i(0); i < matrix_size; ++i) {
-    if (i <= indexLastExcitatoryNeuron) {
-      nb_exci_co += connexions[i][0];
+    for (size_t i(0); i < nb_neurons; ++i) {
+      size_t row_size(targets[i].size());
+      for (size_t j(0); j < row_size; ++j) {
+        if (targets[i][j] == 0) { //because we are looking for the connexions targeting neuron 0
+          if (i <= indexLastExcitatoryNeuron) nb_exci_co += 1;
+          if ((i > indexLastExcitatoryNeuron)and(i <= indexLastInhibitoryNeuron)) {
+            nb_inhi_co += 1;
+          }
+        }
+      }
     }
-    if ((i > indexLastExcitatoryNeuron)and(i <= indexLastInhibitoryNeuron)) {
-      nb_inhi_co += connexions[i][0];
-    }
-  }
+
 
   EXPECT_EQ(nb_exci_co, C_EXCI);
   EXPECT_EQ(nb_inhi_co, C_INHI);
