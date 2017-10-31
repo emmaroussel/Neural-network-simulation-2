@@ -111,7 +111,7 @@ TEST (TwoNeuronsTest, SpikeTimeDelay) {
       if (i == D) v_fin = (network.getAllNeurons()[1])->getMembranePotential();
   }
 
-  double expected_value(all_neurons[0]->getJ()); // Equal to the response amplitude of the first neuron
+  double expected_value(all_neurons[0]->getJ()); // Response amplitude of the first neuron
   EXPECT_NEAR(v_fin, v_ini, expected_value);
 }
 
@@ -129,13 +129,16 @@ TEST(NetworkTest, NumberConnexionsPerNeuron) {
   //We check the number of connexions for the first neuron (index = 0) for example
   int nb_exci_co(0); //number of excitatory connexions
   int nb_inhi_co(0); //number of inhibitory connexions
-  size_t nb_neurons((experiment.getNetwork()->getAllNeurons()).size());
+  size_t nb_neurons(experiment.getNetwork()->getNbNeurons());
   assert(nb_neurons > 0);
 
   vector< vector<size_t> > targets(experiment.getNetwork()->getTargets());
-
+  // We have to look for all the neurons that have the neuron of index 0 in their targets
+  // (this process can take a few seconds since we have to verify the targets of
+  // the 12500 neurons)
     for (size_t i(0); i < nb_neurons; ++i) {
       size_t row_size(targets[i].size());
+
       for (size_t j(0); j < row_size; ++j) {
         if (targets[i][j] == 0) { //because we are looking for the connexions targeting neuron 0
           if (i <= indexLastExcitatoryNeuron) nb_exci_co += 1;
@@ -164,6 +167,8 @@ TEST(NetworkTest, ExcitatoryWeight) {
   }
 
   EXPECT_TRUE(positive_weight);
+
+  all_neurons.clear();
 }
 
 //! Verifies that the weight of inhibitory neurons are negative
@@ -178,6 +183,8 @@ TEST(NetworkTest, InhibitoryWeight) {
   }
 
   EXPECT_TRUE(negative_weight);
+
+  all_neurons.clear();
 }
 
 int main(int argc, char **argv) {

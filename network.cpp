@@ -11,10 +11,8 @@ Network::Network(vector<Neuron*> all_neurons) :
 
 }
 
-
 Network::Network() : global_clock_(0), nb_neurons_(0)
 {}
-
 
 Network::~Network()
 {
@@ -40,6 +38,10 @@ vector<size_t>  Network::getNeuronsIndexes() const {
 
 vector<double> Network::getSpikeTimes() const {
   return spike_times_;
+}
+
+size_t Network::getNbNeurons() const {
+  return nb_neurons_;
 }
 
 /******************************************************************************/
@@ -143,19 +145,18 @@ void Network::updateNetwork(long simulation_time) {
     */
    if (spike) {
       /*
-       * We look for the post-syn neurons of neuron of index id_n.
-       * The neuron id_N has a number of connexions greater than zero with each
-       * of its post-synaptic neurons. (We look in the connexion matrix, only
-       * in the id_n row)
-       * These neurons receive an amplitude response from neuron id_n which
-       * is proportionnal to the number of connexions between neuron id_n
-       * and the post-synaptic neuron concerned.
+       * We look for the post-syn neurons of the neuron of index id_n thanks to
+       * the targets_ attribut.
+       * These post-synaptic neurons receive an amplitude response from neuron id_n.
+       * If a neuron is targeted multiple times by the same neuron, the index
+       * of the target neuron will simply appear multiple times in the vector
+       * targets_ (in the row correponding to the neuron which targets it).
        */
      double j_id_n(all_neurons_[id_n]->getJ()); // weight of a connexion from the id_n neuron
      size_t nb_targets(targets_[id_n].size());
+
      for (size_t i(0); i < nb_targets; ++i) {
        assert(all_neurons_[targets_[id_n][i]] != nullptr);
-
        all_neurons_[targets_[id_n][i]]->receive(D, j_id_n);
      }
 
@@ -163,7 +164,7 @@ void Network::updateNetwork(long simulation_time) {
      /*
       * Neuron has spiked : we add this time spike (corresponding to the global_clock_)
       * to spike_times_ ;
-      * we add the index of the neuron (id_n) to neurons_idx_
+      * we add the index of the neuron (id_n) to neurons_idx_.
       */
       spike_times_.push_back(global_clock_);
       neurons_idx_.push_back(id_n);

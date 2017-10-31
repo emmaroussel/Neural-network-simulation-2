@@ -5,7 +5,6 @@
 
 //Numerical constants
 double const T_START = 0;
-double const T_STOP = 50; // simulation time in ms
 double const H = 0.1;  // integration time step in ms
 double const EXT_CURRENT = 0.0; // external current in pA
 double const TAU = 20; // membrane time constant in ms
@@ -23,12 +22,10 @@ double const C2 = RESISTANCE*(1-C1); // constant to comput the membrane potentia
 
 double const J = 0.1; // spike response amplitude in mV
 double const g = 5; // ratio JI/JE
-double const JE = 0.1; // spike response amplitude for excitatory neurons in mV
-double const JI = -g*J; // spike response amplitude for inhibitory neurons in mV
+double const JE = 0.1; // weight of connexion for excitatory neurons in mV
+double const JI = -g*J; // weight of connexion for inhibitory neurons in mV
+double const JEXT = JE; // external neurons are excitatory
 int const D = 1.5/H; // synaptic delay already in steps (-> 1.5ms)
-
-double const V_TH = 0.01; // firing rate computed by using the formula in Brunel's paper
-double const V_EXT = 2*V_TH; // firing external rate
 
 int const N = 12500; // number of neurons
 int const N_EXCI = 0.8*N; // number of excitatory neurons
@@ -36,6 +33,10 @@ int const N_INHI = 0.2*N; // number of excitatory neurons
 int const C_EXCI = 0.1*N_EXCI; // number of excitatory connexions for 1 neuron (10% * N_EXCI)
 int const C_EXT = C_EXCI;
 int const C_INHI = 0.1*N_INHI; // number of inhibitory connexions for 1 neuron (10% * N_INHI)
+
+double const eta = 2;
+double const nu_TH = V_THRS/(C_EXT*J*TAU); // firing rate
+double const nu_EXT = eta*C_EXT*nu_TH; // firing external rate, (1/ms)
 
 //First index of the vector gathering the neurons (in Network)
 int const indexFirstExcitatoryNeuron = 0;

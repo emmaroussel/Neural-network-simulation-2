@@ -14,7 +14,7 @@
 
  /*!
   * \class Experiment
-  * \brief class allowing to handle a network
+  * \brief Class allowing to handle a network
   *
   * Create, connect the network and run the experiment.
   *
@@ -34,7 +34,7 @@
 
    //! Getter for the network
    /*!
-    * \return  the network
+    * \return a pointer on the network
     */
    Network* getNetwork() const;
 
@@ -48,17 +48,20 @@
 
    //! Runs the experiment
    /*!
-    * Updates the network for a time of simulation defined in the Constants.hpp
-    * file (T_STOP in ms)
+    * \param simulation_time is the time of simulation
+    *
+    * Updates the network for a time of simulation
     */
    void run(long simulation_time);
 
    //! Saves the time spikes and the indexes of neurons which has spiked
+   /*!
+    * \param file is the name of the file where we store the spike times and correpsonding neurons' indexes.
+    */
    void save_spikes(string file);
 
    private :
     Network* network;  /*!< network of the experiment */
-
 
  };
 

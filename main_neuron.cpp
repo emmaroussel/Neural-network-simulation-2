@@ -8,25 +8,24 @@
 #include <time.h>
 
 int main() {
+  //To measure the time of execution
   clock_t start;
   int execution_time;
   start = clock();
 
-  Experiment experiment;
-  experiment.connect();
-  experiment.run(1000); //run for 100 ms
-  experiment.save_spikes("spikes_times_neurons");
-
-/*****************************************************************************/
-  void print(string name, Neuron neuron1);
-  /*
-   * We can print the membrane potential values of any neuron in a file.
-   */
-/*****************************************************************************/
+  Experiment experiment; // Creates a network with N neurons
+  experiment.connect(); // Connects these neurons
+  experiment.run(1000); //run for 1000 ms
+  experiment.save_spikes("spikes_times_neurons.txt"); // Saves the spike times and corresponding neurons
 
   clock_t stop(clock());
   execution_time = (stop - start)/(CLOCKS_PER_SEC/1000);
   cout << '(' << execution_time << "ms total)" << endl;
+
+  /*****************************************************************************/
+    void print(string name, Neuron neuron1);
+    // We can use this function to print all the membrane potential values
+    // for each time step of a simulation for one neuron
 
   return 0;
 }
