@@ -35,7 +35,7 @@ class Network {
     //! Constructor
     /*!
      * \param all_neurons list of pointers of neurons which will compose the network
-     * The connexions between neurons have to be manually added (method connect()).
+     * The connexions between neurons have to be manually added (method addConnexion).
      */
     Network(vector<Neuron*> all_neurons);
 
@@ -99,7 +99,6 @@ class Network {
     /*!
      * \param id_n1 index of the pre-synaptic neuron
      * \param id_n2 index of the post-synaptic neuron
-     * \param weight the weight of the connexion
      */
     void addConnexion(unsigned int id_n1, unsigned int id_n2);
 

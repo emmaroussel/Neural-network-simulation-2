@@ -77,8 +77,13 @@ void Experiment::save_spikes(string file) {
        assert(spike_size == neurons_indexes.size());
 
         for (size_t i(0); i < spike_size; ++i) {
-             out << spikeTimes[i] << '\t'<< neurons_indexes[i] << '\n';
-         }
+             out << spikeTimes[i]*H*0.01 << '\t'<< neurons_indexes[i] << '\n';
+            // spikeTimes[i]*H is in ms
+            // spikeTimes[i]*H*0.01 : a value of 1 is the file corresponds to 100ms
+            // (so 1ms is represented by 0.01) -> we multiply by this so as to have the times
+            // correlated to the ones asked by the graph simulation site used to plot the graphs
+            //(cs116-plot.antoinealb.net)
+        }
         out.close();
      }
 }
