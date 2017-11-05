@@ -23,17 +23,11 @@ void Experiment::connect() {
    * For each neuron, we ramdomly choose 1000 excitatory neurons and 250
    * inhibitory neurons that will target this particular neuron.
    */
-<<<<<<< HEAD
+
   static random_device rd;
   static mt19937 gen(rd());
   static uniform_int_distribution<> distribEx(indexFirstExcitatoryNeuron, indexLastExcitatoryNeuron);
   static uniform_int_distribution<> distribIn(indexFirstInhibitoryNeuron, indexLastInhibitoryNeuron);
-=======
-  random_device rd;
-  mt19937 gen(rd());
-  uniform_int_distribution<> distribEx(indexFirstExcitatoryNeuron, indexLastExcitatoryNeuron);
-  uniform_int_distribution<> distribIn(indexFirstInhibitoryNeuron, indexLastInhibitoryNeuron);
->>>>>>> 6c191c032fdcfd2317cff70767da18ca6111a8da
   //these indexes are found in the Constants.hpp file
 
   // We initialize all the connexions of the neurons in the network
@@ -63,7 +57,6 @@ void Experiment::connect() {
 
 
 void Experiment::run(long simulation_time) {
-<<<<<<< HEAD
   cout << "Updating.." << endl;
   network->updateNetwork(simulation_time);
   cout << "End update" << endl;
@@ -71,13 +64,6 @@ void Experiment::run(long simulation_time) {
 
 
 void Experiment::save_spikes(string file, long simulation_time) {
-=======
-  network->updateNetwork(simulation_time);
-}
-
-
-void Experiment::save_spikes(string file) {
->>>>>>> 6c191c032fdcfd2317cff70767da18ca6111a8da
   ofstream out;
   out.open(file);
   out.clear();
@@ -93,11 +79,8 @@ void Experiment::save_spikes(string file) {
 
        assert(spike_size == neurons_indexes.size());
 
-<<<<<<< HEAD
        cout << "Firing rate : "<< spike_size/(simulation_time/H) << "Hz" << endl;
 
-=======
->>>>>>> 6c191c032fdcfd2317cff70767da18ca6111a8da
         for (size_t i(0); i < spike_size; ++i) {
              out << spikeTimes[i]*H*0.01 << '\t'<< neurons_indexes[i] << '\n';
             // spikeTimes[i]*H is in ms
