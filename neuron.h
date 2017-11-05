@@ -135,7 +135,11 @@ class Neuron {
      * Stores the amplitude response in a ring buffer at the correct position
      * (taking into consideration the delay)
      */
+<<<<<<< HEAD
     void receive(long delay, double j);
+=======
+    void receive(int delay, double j);
+>>>>>>> 6c191c032fdcfd2317cff70767da18ca6111a8da
 
     //! Update the ring buffer
     /*!

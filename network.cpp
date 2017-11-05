@@ -16,8 +16,13 @@ Network::Network() : global_clock_(0), nb_neurons_(0)
 
 Network::~Network()
 {
+<<<<<<< HEAD
     for (size_t i(0); i < nb_neurons_; ++i) {
         delete all_neurons_[i];
+=======
+    for (auto& neuron : all_neurons_) {
+        delete neuron;
+>>>>>>> 6c191c032fdcfd2317cff70767da18ca6111a8da
     }
     all_neurons_.clear();
 }

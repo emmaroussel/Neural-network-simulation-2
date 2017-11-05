@@ -153,7 +153,11 @@ bool Neuron::update(long steps) {
 }
 
 
+<<<<<<< HEAD
 void Neuron::receive(long delay, double j) {
+=======
+void Neuron::receive(int delay, double j) {
+>>>>>>> 6c191c032fdcfd2317cff70767da18ca6111a8da
   assert(delay >= 0);
   size_t position((rb_index_ + delay) % (D+1));
   ring_buffer_[position] += j;

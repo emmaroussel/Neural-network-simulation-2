@@ -57,9 +57,14 @@
    //! Saves the time spikes and the indexes of neurons which has spiked
    /*!
     * \param file is the name of the file where we store the spike times and correpsonding neurons' indexes.
+<<<<<<< HEAD
     * \param simulation_time is the time of simulation
     */
    void save_spikes(string file, long simulation_time);
+=======
+    */
+   void save_spikes(string file);
+>>>>>>> 6c191c032fdcfd2317cff70767da18ca6111a8da
 
    private :
     Network* network;  /*!< network of the experiment */
