@@ -15,13 +15,13 @@ int main() {
 
   Experiment experiment; // Creates a network with N neurons
   experiment.connect(); // Connects these neurons
-  experiment.run(1200); //run for 1000 ms
+  experiment.run(1000); //run for 1000 ms
 
   clock_t stop(clock());
   execution_time = (stop - start)/(CLOCKS_PER_SEC/1000);
   cout << '(' << execution_time << "ms total)" << endl;
 
-  experiment.save_spikes("spikes_times_neurons.txt", 1200); // Saves the spike times and corresponding neurons
+  experiment.save_spikes("spikes_times_neurons.txt", 1000); // Saves the spike times and corresponding neurons
 
   /*****************************************************************************/
     void print(string name, Neuron neuron1);
